@@ -443,6 +443,7 @@ export class AuthClient {
   }
 
   async handleCallback(req: NextRequest): Promise<NextResponse> {
+    console.log("handleCallback");
     const state = req.nextUrl.searchParams.get("state");
     if (!state) {
       return this.onCallback(new MissingStateError(), {}, null);
