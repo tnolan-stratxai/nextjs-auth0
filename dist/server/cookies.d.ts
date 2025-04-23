@@ -1,0 +1,59 @@
+import { RequestCookies, ResponseCookies } from "@edge-runtime/cookies";
+import * as jose from "jose";
+export declare function encrypt(payload: jose.JWTPayload, secret: string, additionalHeaders?: {
+    iat: number;
+    uat: number;
+    exp: number;
+}): Promise<string>;
+export declare function decrypt<T>(cookieValue: string, secret: string): Promise<jose.JWTDecryptResult<T>>;
+/**
+ * Verify a signed cookie. If the cookie is valid, the value is returned. Otherwise, undefined is returned.
+ * This method is used solely to migrate signed, legacy cookies to the new encrypted cookie format (v4+).
+ */
+export declare function verifySigned(k: string, v: string, secret: string): Promise<string | undefined>;
+/**
+ * Sign a cookie value using a secret.
+ * This method is used solely to migrate signed, legacy cookies to the new encrypted cookie format (v4+).
+ */
+export declare function sign(name: string, value: string, secret: string): Promise<string>;
+export interface CookieOptions {
+    httpOnly: boolean;
+    sameSite: "lax" | "strict" | "none";
+    secure: boolean;
+    path: string;
+    maxAge?: number;
+}
+export type ReadonlyRequestCookies = Omit<RequestCookies, "set" | "clear" | "delete"> & Pick<ResponseCookies, "set" | "delete">;
+export { ResponseCookies };
+export { RequestCookies };
+/**
+ * Sets a cookie with the given name and value, splitting it into chunks if necessary.
+ *
+ * If the value exceeds the maximum chunk size, it will be split into multiple cookies
+ * with names suffixed by a chunk index.
+ *
+ * @param name - The name of the cookie.
+ * @param value - The value to be stored in the cookie.
+ * @param options - Options for setting the cookie.
+ * @param reqCookies - The request cookies object, used to enable read-after-write in the same request for middleware.
+ * @param resCookies - The response cookies object, used to set the cookies in the response.
+ */
+export declare function setChunkedCookie(name: string, value: string, options: CookieOptions, reqCookies: RequestCookies, resCookies: ResponseCookies): void;
+/**
+ * Retrieves a chunked cookie by its name from the request cookies.
+ * If a regular cookie with the given name exists, it returns its value.
+ * Otherwise, it attempts to retrieve and combine all chunks of the cookie.
+ *
+ * @param name - The name of the cookie to retrieve.
+ * @param reqCookies - The request cookies object.
+ * @returns The combined value of the chunked cookie, or `undefined` if the cookie does not exist or is incomplete.
+ */
+export declare function getChunkedCookie(name: string, reqCookies: RequestCookies): string | undefined;
+/**
+ * Deletes a chunked cookie and all its associated chunks from the response cookies.
+ *
+ * @param name - The name of the main cookie to delete.
+ * @param reqCookies - The request cookies object containing all cookies from the request.
+ * @param resCookies - The response cookies object to manipulate the cookies in the response.
+ */
+export declare function deleteChunkedCookie(name: string, reqCookies: RequestCookies, resCookies: ResponseCookies): void;
