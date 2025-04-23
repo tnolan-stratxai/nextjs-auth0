@@ -256,6 +256,7 @@ export class AuthClient {
         return res;
     }
     async handleCallback(req) {
+        console.log("handleCallback");
         const state = req.nextUrl.searchParams.get("state");
         if (!state) {
             return this.onCallback(new MissingStateError(), {}, null);
