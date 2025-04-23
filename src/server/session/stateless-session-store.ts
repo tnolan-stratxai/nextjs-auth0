@@ -86,9 +86,22 @@ export class StatelessSessionStore extends AbstractSessionStore {
     resCookies: cookies.ResponseCookies,
     session: SessionData
   ) {
+    console.log("StatelessSessionStore.set reqCookies", reqCookies);
+    console.log("StatelessSessionStore.set resCookies", resCookies);
+    console.log("StatelessSessionStore.set session", session);
     const { connectionTokenSets, ...originalSession } = session;
+    console.log(
+      "StatelessSessionStore.set originalSession",
+      originalSession)
+    console.log(
+      "StatelessSessionStore.set connectionTokenSets",
+      connectionTokenSets)
     const jwe = await cookies.encrypt(originalSession, this.secret);
+
+    console.log("StatelessSessionStore.set jwe", jwe);
+
     const maxAge = this.calculateMaxAge(session.internal.createdAt);
+    console.log("StatelessSessionStore.set maxAge", maxAge);
     const cookieValue = jwe.toString();
     const options: CookieOptions = {
       ...this.cookieConfig,
